@@ -314,6 +314,43 @@ body {
   color: var(--muted);
   font-size: 13px;
 }
+.field-label {
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+.date-range {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+.date-range input[type="month"] {
+  padding: 9px 11px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+}
+.date-range input[type="month"]:disabled {
+  background: #f0f1f3;
+  color: var(--muted);
+}
+.date-range-sep {
+  color: var(--muted);
+}
+.editor-form label.checkbox {
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 0;
+  white-space: nowrap;
+}
+.editor-form label.checkbox input[type="checkbox"] {
+  width: auto;
+  margin: 0;
+}
 .editor-preview {
   padding: 24px;
   overflow-y: auto;

@@ -1,13 +1,20 @@
 export interface WorkExperience {
   company: string;
   role: string;
-  period: string;
+  startDate: string;
+  endDate: string;
+  current: boolean;
+  // Legacy free-text period kept for backward compatibility.
+  period?: string;
   description: string;
 }
 
 export interface Education {
   school: string;
-  period: string;
+  startDate: string;
+  endDate: string;
+  current: boolean;
+  period?: string;
   note: string;
 }
 

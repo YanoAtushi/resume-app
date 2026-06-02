@@ -69,14 +69,14 @@ export default function Editor() {
   function addExperience() {
     update("experiences", [
       ...data.experiences,
-      { company: "", role: "", period: "", description: "" },
+      { company: "", role: "", startDate: "", endDate: "", current: false, description: "" },
     ]);
   }
 
-  function updateExperience(index: number, field: keyof WorkExperience, value: string) {
+  function updateExperience(index: number, patch: Partial<WorkExperience>) {
     update(
       "experiences",
-      data.experiences.map((exp, i) => (i === index ? { ...exp, [field]: value } : exp)),
+      data.experiences.map((exp, i) => (i === index ? { ...exp, ...patch } : exp)),
     );
   }
 
@@ -88,13 +88,16 @@ export default function Editor() {
   }
 
   function addEducation() {
-    update("education", [...data.education, { school: "", period: "", note: "" }]);
+    update("education", [
+      ...data.education,
+      { school: "", startDate: "", endDate: "", current: false, note: "" },
+    ]);
   }
 
-  function updateEducation(index: number, field: keyof Education, value: string) {
+  function updateEducation(index: number, patch: Partial<Education>) {
     update(
       "education",
-      data.education.map((edu, i) => (i === index ? { ...edu, [field]: value } : edu)),
+      data.education.map((edu, i) => (i === index ? { ...edu, ...patch } : edu)),
     );
   }
 
@@ -173,9 +176,9 @@ export default function Editor() {
               <label>
                 生年月日
                 <input
+                  type="date"
                   value={data.birthDate}
                   onChange={(e) => update("birthDate", e.target.value)}
-                  placeholder="1990年1月1日"
                 />
               </label>
               <label>
@@ -232,31 +235,53 @@ export default function Editor() {
                     会社名
                     <input
                       value={exp.company}
-                      onChange={(e) => updateExperience(i, "company", e.target.value)}
+                      onChange={(e) => updateExperience(i, { company: e.target.value })}
                     />
                   </label>
                   <label>
-                    在籍期間
+                    役職・部署
                     <input
-                      value={exp.period}
-                      onChange={(e) => updateExperience(i, "period", e.target.value)}
-                      placeholder="2018年4月 〜 2022年3月"
+                      value={exp.role}
+                      onChange={(e) => updateExperience(i, { role: e.target.value })}
                     />
                   </label>
                 </div>
-                <label>
-                  役職・部署
+                <label className="field-label">在籍期間</label>
+                <div className="date-range">
                   <input
-                    value={exp.role}
-                    onChange={(e) => updateExperience(i, "role", e.target.value)}
+                    type="month"
+                    aria-label="在籍期間 開始"
+                    value={exp.startDate ?? ""}
+                    onChange={(e) => updateExperience(i, { startDate: e.target.value })}
                   />
-                </label>
+                  <span className="date-range-sep">〜</span>
+                  <input
+                    type="month"
+                    aria-label="在籍期間 終了"
+                    value={exp.endDate ?? ""}
+                    disabled={exp.current}
+                    onChange={(e) => updateExperience(i, { endDate: e.target.value })}
+                  />
+                  <label className="checkbox">
+                    <input
+                      type="checkbox"
+                      checked={!!exp.current}
+                      onChange={(e) =>
+                        updateExperience(i, {
+                          current: e.target.checked,
+                          endDate: e.target.checked ? "" : exp.endDate,
+                        })
+                      }
+                    />
+                    現在
+                  </label>
+                </div>
                 <label>
                   業務内容
                   <textarea
                     rows={3}
                     value={exp.description}
-                    onChange={(e) => updateExperience(i, "description", e.target.value)}
+                    onChange={(e) => updateExperience(i, { description: e.target.value })}
                   />
                 </label>
                 <button className="btn danger small" onClick={() => removeExperience(i)}>
@@ -280,23 +305,45 @@ export default function Editor() {
                     学校名
                     <input
                       value={edu.school}
-                      onChange={(e) => updateEducation(i, "school", e.target.value)}
+                      onChange={(e) => updateEducation(i, { school: e.target.value })}
                     />
                   </label>
-                  <label>
-                    期間
+                </div>
+                <label className="field-label">期間</label>
+                <div className="date-range">
+                  <input
+                    type="month"
+                    aria-label="在学期間 開始"
+                    value={edu.startDate ?? ""}
+                    onChange={(e) => updateEducation(i, { startDate: e.target.value })}
+                  />
+                  <span className="date-range-sep">〜</span>
+                  <input
+                    type="month"
+                    aria-label="在学期間 終了"
+                    value={edu.endDate ?? ""}
+                    disabled={edu.current}
+                    onChange={(e) => updateEducation(i, { endDate: e.target.value })}
+                  />
+                  <label className="checkbox">
                     <input
-                      value={edu.period}
-                      onChange={(e) => updateEducation(i, "period", e.target.value)}
-                      placeholder="2014年4月 〜 2018年3月"
+                      type="checkbox"
+                      checked={!!edu.current}
+                      onChange={(e) =>
+                        updateEducation(i, {
+                          current: e.target.checked,
+                          endDate: e.target.checked ? "" : edu.endDate,
+                        })
+                      }
                     />
+                    在学中
                   </label>
                 </div>
                 <label>
                   備考
                   <input
                     value={edu.note}
-                    onChange={(e) => updateEducation(i, "note", e.target.value)}
+                    onChange={(e) => updateEducation(i, { note: e.target.value })}
                   />
                 </label>
                 <button className="btn danger small" onClick={() => removeEducation(i)}>
