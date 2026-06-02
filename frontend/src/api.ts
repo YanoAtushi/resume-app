@@ -8,6 +8,11 @@ import type {
 
 const TOKEN_KEY = "resume_app_token";
 
+// In production the frontend and backend are deployed separately, so the API
+// base URL is configured via VITE_API_BASE_URL. In dev it stays empty and the
+// Vite proxy forwards "/api" to the local backend.
+const API_BASE = (import.meta.env.VITE_API_BASE_URL ?? "").replace(/\/$/, "");
+
 export function getToken(): string | null {
   return localStorage.getItem(TOKEN_KEY);
 }
@@ -38,7 +43,7 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
     headers["Authorization"] = `Bearer ${token}`;
   }
 
-  const resp = await fetch(`/api${path}`, { ...options, headers });
+  const resp = await fetch(`${API_BASE}/api${path}`, { ...options, headers });
 
   if (resp.status === 204) {
     return undefined as T;
